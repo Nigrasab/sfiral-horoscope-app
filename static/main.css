@@ -38,3 +38,10 @@ button{
   font-style:italic;
   color:#444;
 }
+/* ——— логотип в шапке ——— */
+.logo{
+    width:40px;        /* высота/ширина значка */
+    height:40px;
+    vertical-align:middle;  /* выравнивает по тексту */
+    margin-right:10px;      /* расстояние до заголовка */
+}
