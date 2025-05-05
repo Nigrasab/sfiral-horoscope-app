@@ -1,4 +1,4 @@
-/* базовые стили страницы */
+/* ====== базовые стили страницы ====== */
 body{
   font-family:sans-serif;
   background:#f5f5f5;
@@ -38,10 +38,11 @@ button{
   font-style:italic;
   color:#444;
 }
-/* ——— логотип в шапке ——— */
+
+/* ====== логотип в шапке ====== */
 .logo{
-    width:40px;        /* высота/ширина значка */
-    height:40px;
-    vertical-align:middle;  /* выравнивает по тексту */
-    margin-right:10px;      /* расстояние до заголовка */
+  width:40px;
+  height:40px;
+  vertical-align:middle;
+  margin-right:10px;
 }
