@@ -1,82 +1,67 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Сфираль-Гороскоп</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #f5f5f5;
-      text-align: center;
-      padding: 2em;
-    }
-    header {
-      background-color: #111;
-      color: white;
-      padding: 1em;
-    }
-    img {
-      max-width: 300px;
-      margin: 1em auto;
-    }
-    form {
-      margin-top: 2em;
-    }
-    input, button {
-      padding: 0.5em;
-      font-size: 1em;
-    }
-    #result {
-      margin-top: 2em;
-      background-color: #eef;
-      border-left: 6px solid #3366cc;
-      padding: 1em;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: left;
-    }
-    blockquote {
-      font-style: italic;
-      color: #555;
-      margin: 1em 0 0 0;
-      padding-left: 1em;
-      border-left: 4px solid #ccc;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Сфираль-Гороскоп</title>
+    <style>
+        body {
+            background: #f4f4f4;
+            font-family: sans-serif;
+            text-align: center;
+            margin: 0;
+        }
+        header {
+            background: #111;
+            color: white;
+            padding: 1em;
+        }
+        img {
+            width: 200px;
+            margin: 20px auto;
+        }
+        form {
+            margin-top: 20px;
+        }
+        input[type="date"] {
+            padding: 0.5em;
+            font-size: 1em;
+        }
+        button {
+            padding: 0.5em 1em;
+            font-size: 1em;
+            margin-left: 1em;
+        }
+        .result {
+            margin-top: 2em;
+            padding: 1em;
+            background: #eef;
+            display: inline-block;
+            max-width: 600px;
+        }
+        .mantra {
+            margin-top: 1em;
+            font-style: italic;
+            color: #444;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>Сфираль-Гороскоп</h1>
-    <p>Фазовая характеристика жизненного пути по модели Сфирали</p>
-  </header>
+    <header>
+        <h1>Сфираль-Гороскоп</h1>
+        <p>Фазовая характеристика жизненного пути по модели Сфирали</p>
+    </header>
 
-  <img src="/static/sfiral.png" alt="Сфираль">
+    <img src="{{ url_for('static', filename='sfiral.png') }}" alt="Сфираль">
 
-  <form id="horoscopeForm">
-    <label for="birthdate">Введите дату рождения:</label>
-    <input type="date" id="birthdate" name="birthdate" required>
-    <button type="submit">Старт</button>
-  </form>
+    <form method="POST">
+        <label>Введите дату рождения:</label>
+        <input type="date" name="birthdate" required>
+        <button type="submit">Старт</button>
+    </form>
 
-  <div id="result"></div>
-
-  <script>
-    document.getElementById('horoscopeForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-      const formData = new FormData(event.target);
-      fetch('/horoscope', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.text())
-      .then(data => {
-        document.getElementById('result').innerHTML = data;
-      })
-      .catch(error => {
-        document.getElementById('result').innerHTML = 'Ошибка при получении данных.';
-      });
-    });
-  </script>
+    {% if result %}
+        <div class="result">{{ result|safe }}</div>
+    {% endif %}
 </body>
 </html>
