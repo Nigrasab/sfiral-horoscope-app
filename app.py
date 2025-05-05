@@ -1,39 +1,51 @@
-from flask import Flask, request, jsonify, render_template
+import json
 from datetime import datetime
+from pathlib import Path
+from flask import Flask, request, jsonify, render_template, url_for
 
 app = Flask(__name__)
 
-#  ▶ сюда постепенно внесёте все интервалы; пока одна запись достаточно, чтобы проверить логику
-phases = {
-    (50, 55): {
-        "title": "50–55 лет",
-        "text": "Фаза разрыва. Переформатирование цели.",
-        "mantra": "Отпускаю прежние формы. Слышу новый зов. Становлюсь собой заново."
-    }
-}
+# ---------------------------------------------------------
+# Загрузка фаз из внешнего файла phases.json
+# ---------------------------------------------------------
+PHASES_PATH = Path(__file__).parent / "phases.json"
 
-# ─────────────────────────────────────────────
-@app.route("/")                          # главная – только GET
+def load_phases() -> dict:
+    if not PHASES_PATH.exists():
+        raise FileNotFoundError("phases.json not found. Add the file to project root.")
+    with open(PHASES_PATH, "r", encoding="utf-8") as fp:
+        data = json.load(fp)
+    # преобразуем ключи из "0-5" в кортежи (0,5)
+    converted = {}
+    for interval, payload in data.items():
+        start, end = map(int, interval.split("-"))
+        converted[(start, end)] = payload
+    return converted
+
+phases = load_phases()
+
+# ---------------------------------------------------------
+@app.route("/")
 def index():
     return render_template("index.html")
-# ─────────────────────────────────────────────
-@app.route("/api/phase", methods=["POST"])        # AJAX‑маршрут
+
+# API для Ajax-запроса --------------------------------------------------------
+@app.route("/api/phase", methods=["POST"])
 def api_phase():
-    date_str = request.json.get("date")
+    payload = request.get_json(force=True)
+    date_str = payload.get("date")
     try:
-        bd = datetime.strptime(date_str, "%Y-%m-%d")
+        birthdate = datetime.strptime(date_str, "%Y-%m-%d")
         today = datetime.today()
-        age = today.year - bd.year - (
-            (today.month, today.day) < (bd.month, bd.day)
-        )
+        age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
 
-        for (start, end), data in phases.items():
+        for (start, end), info in phases.items():
             if start <= age < end:
-                return jsonify(success=True, **data)
+                return jsonify(success=True, **info)
+        return jsonify(success=False, error="Возраст вне диапазона 0–120 лет.")
+    except Exception as exc:
+        return jsonify(success=False, error=str(exc))
 
-        return jsonify(success=False, error="Возраст вне диапазона 0‑120.")
-    except Exception as e:
-        return jsonify(success=False, error=str(e))
-# ─────────────────────────────────────────────
+# ---------------------------------------------------------
 if __name__ == "__main__":
     app.run(debug=True)
