@@ -1,2 +1,3 @@
-# sfiral-horoscope-app
-Web app for phase-based sfiral horoscope generation
+# Sfiral Horoscope App
+
+A tool for generating phase-based sfiral horoscopes.
