@@ -1,10 +1,10 @@
-from flask import Flask, request
+from flask import Flask, request, render_template_string
 from datetime import datetime
 
 app = Flask(__name__)
 
-@app.route("/")
-def index():
+@app.route("/", methods=["GET"])
+def form():
     return '''
         <!DOCTYPE html>
         <html>
@@ -23,27 +23,19 @@ def index():
     '''
 
 @app.route("/horoscope", methods=["POST"])
-def horoscope():
+def result():
     birthdate_str = request.form.get("birthdate")
     try:
         birthdate = datetime.strptime(birthdate_str, "%Y-%m-%d")
-        return f'''
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <title>Результат</title>
-            </head>
-            <body>
-                <h2>Фазовый гороскоп для: {birthdate.strftime("%d.%m.%Y")}</h2>
-                <p>🜂 Солнце в знаке (примерная зона расчёта).</p>
-                <p>🜄 Эфемериды и фазы будут добавлены позднее.</p>
-                <a href="/">← Назад</a>
-            </body>
-            </html>
-        '''
-    except:
-        return '''
-            <p>Ошибка разбора даты. Пожалуйста, введите корректную дату.</p>
-            <a href="/">← Назад</a>
-        '''
+        today = datetime.today()
+        age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+
+        return render_template_string(f"""
+            <h2>Ваш гороскоп</h2>
+            <p>Дата рождения: {birthdate.strftime('%d.%m.%Y')}</p>
+            <p>Возраст: {age}</p>
+            <p>Сфиральный прогноз: фаза обновления 🌱</p>
+            <a href="/">Назад</a>
+        """)
+    except Exception as e:
+        return f"Ошибка обработки даты: {e}"
