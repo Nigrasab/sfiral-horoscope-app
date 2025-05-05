@@ -1,40 +1,43 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, jsonify, render_template
 from datetime import datetime
 
 app = Flask(__name__)
 
-# Таблица фаз по пятилеткам (пример с одной записью, далее можно расширить)
 phases = {
-    (50, 55): "Фаза разрыва. Переформатирование цели."
-    # Добавьте остальные интервалы
+    (50, 55): {
+        "title": "50–55 лет",
+        "text": "Фаза разрыва. Переформатирование цели.",
+        "mantra": "Отпускаю прежние формы. Слышу новый зов. Становлюсь собой заново."
+    },
+    # Добавь остальные фазы по аналогии
 }
 
-@app.route("/", methods=["GET", "POST"])
-def home():
-    result = ""
-    if request.method == "POST":
-        date_str = request.form.get("birthdate")
-        try:
-            birthdate = datetime.strptime(date_str, "%Y-%m-%d")
-            today = datetime.today()
-            age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+@app.route("/")
+def index():
+    return render_template("index.html")
 
-            for (start, end), msg in phases.items():
-                if start <= age < end:
-                    result = f"""
-                        <div class="result">
-                            <h3>{start}–{end} лет</h3>
-                            <p>{msg}</p>
-                            <div class="mantra">Медитативная формула:<br><em>Отпускаю прежние формы. Слышу новый зов. Становлюсь собой заново.</em></div>
-                        </div>
-                    """
-                    break
-            if not result:
-                result = "<p>Возраст вне диапазона.</p>"
-        except Exception as e:
-            result = f"<p>Ошибка: {e}</p>"
+@app.route("/api/phase", methods=["POST"])
+def get_phase():
+    data = request.get_json()
+    date_str = data.get("date")
 
-    return render_template("index.html", result=result)
+    try:
+        birthdate = datetime.strptime(date_str, "%Y-%m-%d")
+        today = datetime.today()
+        age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+
+        for (start, end), content in phases.items():
+            if start <= age < end:
+                return jsonify({
+                    "success": True,
+                    "title": content["title"],
+                    "text": content["text"],
+                    "mantra": content["mantra"]
+                })
+
+        return jsonify({"success": False, "error": "Возраст вне диапазона."})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
 
 if __name__ == "__main__":
     app.run(debug=True)
