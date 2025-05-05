@@ -30,29 +30,23 @@ phases = {
     (115, 120): "Исчезновение границ. Я есмь полное растворение."
 }
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
-    return render_template("index.html")
+    result = ""
+    if request.method == "POST":
+        date_str = request.form.get("date")
+        try:
+            birthdate = datetime.strptime(date_str, "%Y-%m-%d")
+            today = datetime.today()
+            age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
 
-@app.route("/horoscope")
-def horoscope():
-    date_str = request.args.get("date")
-    if not date_str:
-        return "Дата не указана."
+            for (start, end), msg in phases.items():
+                if start <= age < end:
+                    result = f"<h3>{start}–{end} лет</h3><p>{msg}</p>"
+                    break
+            else:
+                result = "Возраст вне диапазона."
+        except:
+            result = "Неверный формат даты."
 
-    try:
-        birthdate = datetime.strptime(date_str, "%Y-%m-%d")
-        today = datetime.today()
-        age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
-
-        text = ""
-        for (start, end), msg in phases.items():
-            if start <= age < end:
-                text = f"<h3>{start}–{end} лет</h3><p>{msg}</p>"
-                break
-        else:
-            text = "Возраст вне диапазона."
-
-        return text
-    except Exception as e:
-        return f"Ошибка: {e}"
+    return render_template("index.html", result=result)
