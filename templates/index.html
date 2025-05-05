@@ -3,30 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <title>Сфираль‑Гороскоп</title>
-
-  <!-- Подключаем внешний CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
 </head>
 <body>
   <header>
     <h1>Сфираль‑Гороскоп</h1>
     <p>Фазовая характеристика жизненного пути по модели Сфирали</p>
+    <!-- ссылка на страницу «О проекте» -->
+    <p style="margin-top:10px;">
+      <a href="{{ url_for('info') }}" style="color:#ccc; text-decoration:underline;">О проекте</a>
+    </p>
   </header>
 
-  <!-- изображение -->
+  <!-- изображение Сфирали -->
   <img src="{{ url_for('static', filename='sfiral.png') }}" alt="Сфираль">
 
-  <!-- форма -->
+  <!-- форма ввода даты -->
   <form id="form">
     <label for="birth">Введите дату рождения:</label>
     <input type="date" id="birth" required>
     <button type="submit">Старт</button>
   </form>
 
-  <!-- блок для вывода результата -->
+  <!-- блок результата -->
   <div id="result"></div>
 
-  <!-- Подключаем внешний JavaScript -->
+  <!-- внешний JS -->
   <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
 </html>
