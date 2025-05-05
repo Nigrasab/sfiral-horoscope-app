@@ -5,38 +5,32 @@
     <title>Сфираль-Гороскоп</title>
     <style>
         body {
-            background: #f4f4f4;
             font-family: sans-serif;
+            background-color: #f5f5f5;
             text-align: center;
-            margin: 0;
         }
         header {
-            background: #111;
+            background-color: #111;
             color: white;
-            padding: 1em;
+            padding: 30px 0;
         }
         img {
-            width: 200px;
+            max-width: 300px;
             margin: 20px auto;
         }
         form {
-            margin-top: 20px;
-        }
-        input[type="date"] {
-            padding: 0.5em;
-            font-size: 1em;
-        }
-        button {
-            padding: 0.5em 1em;
-            font-size: 1em;
-            margin-left: 1em;
+            margin: 20px auto;
         }
         .result {
-            margin-top: 2em;
-            padding: 1em;
-            background: #eef;
+            background-color: #eeefff;
             display: inline-block;
-            max-width: 600px;
+            padding: 20px;
+            margin-top: 20px;
+            min-width: 300px;
+        }
+        .mantra {
+            font-style: italic;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -46,16 +40,40 @@
         <p>Фазовая характеристика жизненного пути по модели Сфирали</p>
     </header>
 
-    <img src="{{ url_for('static', filename='sfiral.png') }}" alt="Сфираль">
+    <img src="{{ url_for('static', filename='sfrial.png') }}" alt="Сфираль">
 
-    <form method="POST">
-        <label>Введите дату рождения:</label>
-        <input type="date" name="birthdate" required>
+    <form id="form">
+        <label for="birthdate">Введите дату рождения:</label>
+        <input type="date" id="birthdate" required>
         <button type="submit">Старт</button>
     </form>
 
-    {% if result %}
-        <div class="result">{{ result|safe }}</div>
-    {% endif %}
+    <div id="result" class="result" style="display:none;"></div>
+
+    <script>
+        document.getElementById("form").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const date = document.getElementById("birthdate").value;
+            const res = await fetch("/api/phase", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ date })
+            });
+            const data = await res.json();
+            const resultBlock = document.getElementById("result");
+
+            if (data.success) {
+                resultBlock.innerHTML = `
+                    <strong>${data.title}</strong><br>
+                    ${data.text}<br><br>
+                    <div><b>Медитативная формула:</b><br><span class="mantra">${data.mantra}</span></div>
+                `;
+                resultBlock.style.display = "inline-block";
+            } else {
+                resultBlock.innerHTML = `<span style="color:red;">${data.error}</span>`;
+                resultBlock.style.display = "inline-block";
+            }
+        });
+    </script>
 </body>
 </html>
