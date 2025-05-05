@@ -1,45 +1,61 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Сфираль-Гороскоп</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #f5f5f5;
-      text-align: center;
-      padding: 2em;
-    }
-    header {
-      background-color: #111;
-      color: white;
-      padding: 1em;
-    }
-    img {
-      max-width: 300px;
-      margin: 1em auto;
-    }
-    form {
-      margin-top: 2em;
-    }
-    input, button {
-      padding: 0.5em;
-      font-size: 1em;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Сфираль-Гороскоп</title>
+    <style>
+        body {
+            background: #f4f4f4;
+            font-family: sans-serif;
+            text-align: center;
+            margin: 0;
+        }
+        header {
+            background: #111;
+            color: white;
+            padding: 1em;
+        }
+        img {
+            width: 200px;
+            margin: 20px auto;
+        }
+        form {
+            margin-top: 20px;
+        }
+        input[type="date"] {
+            padding: 0.5em;
+            font-size: 1em;
+        }
+        button {
+            padding: 0.5em 1em;
+            font-size: 1em;
+            margin-left: 1em;
+        }
+        .result {
+            margin-top: 2em;
+            padding: 1em;
+            background: #eef;
+            display: inline-block;
+            max-width: 600px;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>Сфираль-Гороскоп</h1>
-    <p>Фазовая характеристика жизненного пути по модели Сфирали</p>
-  </header>
+    <header>
+        <h1>Сфираль-Гороскоп</h1>
+        <p>Фазовая характеристика жизненного пути по модели Сфирали</p>
+    </header>
 
-  <img src="/static/sfiral.png" alt="Сфираль">
+    <img src="{{ url_for('static', filename='sfiral.png') }}" alt="Сфираль">
 
-  <form method="post" action="/horoscope">
-    <label for="birthdate">Введите дату рождения:</label>
-    <input type="date" id="birthdate" name="birthdate" required>
-    <button type="submit">Старт</button>
-  </form>
+    <form method="POST">
+        <label>Введите дату рождения:</label>
+        <input type="date" name="birthdate" required>
+        <button type="submit">Старт</button>
+    </form>
+
+    {% if result %}
+        <div class="result">{{ result|safe }}</div>
+    {% endif %}
 </body>
 </html>
