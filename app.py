@@ -1,55 +1,45 @@
-from flask import Flask, request, render_template_string, send_from_directory
+from flask import Flask, request, render_template
 from datetime import datetime
-import os
 
 app = Flask(__name__)
 
-@app.route('/')
-def index():
-    return '''
-        <!DOCTYPE html>
-        <html>
-        <head><title>Sfiral Horoscope</title></head>
-        <body>
-            <h2>Введите дату рождения:</h2>
-            <form method="post" action="/horoscope">
-                <input type="date" name="birthdate" required>
-                <button type="submit">Построить гороскоп</button>
-            </form>
-        </body>
-        </html>
-    '''
+# Таблица фаз по пятилеткам (сокращённо, для примера)
+phases = {
+    (0, 5): "Зачатие импульса. Формирование основы телесности.",
+    (5, 10): "Формирование восприятия. Впитывание мира.",
+    (10, 15): "Ускорение. Индивидуализация начинается.",
+    # ... до (115, 120)
+    (115, 120): "Исчезновение границ. Я есмь полное растворение."
+}
 
-@app.route('/horoscope', methods=['POST'])
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+@app.route("/horoscope")
 def horoscope():
-    birthdate_str = request.form['birthdate']
-    birthdate = datetime.strptime(birthdate_str, '%Y-%m-%d')
-    today = datetime.today()
-    age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+    date_str = request.args.get("date")
+    if not date_str:
+        return "Дата не указана."
 
-    # Упрощённый расчёт фазы
-    phase_names = ['фаза зарождения 🌱', 'фаза роста 🌿', 'фаза расцвета 🌻', 'фаза убывания 🍂']
-    phase_index = age % 4
-    phase = phase_names[phase_index]
+    try:
+        birthdate = datetime.strptime(date_str, "%Y-%m-%d")
+        today = datetime.today()
+        age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
 
-    return render_template_string('''
-        <!DOCTYPE html>
-        <html>
-        <head><title>Ваш гороскоп</title></head>
-        <body>
-            <h1>Ваш гороскоп</h1>
-            <p>Дата рождения: {{ birthdate }}</p>
-            <p>Возраст: {{ age }}</p>
-            <p>Сфиральный прогноз: {{ phase }}</p>
+        # Найти фазу по возрасту
+        text = ""
+        for (start, end), msg in phases.items():
+            if start <= age < end:
+                text = f"<h3>{start}–{end} лет</h3><p>{msg}</p>"
+                break
 
-            <h2>Сфираль</h2>
-            <img src="/static/sfiral.png" alt="Сфираль" style="max-width: 300px;">
+        if not text:
+            text = "Возраст вне диапазона."
 
-            <p><a href="/">Назад</a></p>
-        </body>
-        </html>
-    ''', birthdate=birthdate.strftime('%d.%m.%Y'), age=age, phase=phase)
+        return text
+    except Exception as e:
+        return f"Ошибка: {e}"
 
-# Для локальной отладки (не нужно на Render)
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
