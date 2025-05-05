@@ -1,14 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Sfiral Horoscope</title>
-</head>
-<body>
-    <h2>Введите дату рождения:</h2>
-    <form method="post" action="/horoscope">
-        <input type="date" name="birthdate" required>
-        <button type="submit">Построить гороскоп</button>
-    </form>
-</body>
-</html>
+<form method="POST">
+  <label for="date">Введите дату рождения:</label>
+  <input type="date" id="date" name="date" required>
+  <button type="submit">Старт</button>
+</form>
+
+{% if result %}
+  <div style="margin-top: 20px; background: #f0f0ff; padding: 20px;">
+    {{ result | safe }}
+  </div>
+{% endif %}
