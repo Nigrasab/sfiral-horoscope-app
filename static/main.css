@@ -1,0 +1,40 @@
+/* базовые стили страницы */
+body{
+  font-family:sans-serif;
+  background:#f5f5f5;
+  text-align:center;
+  margin:0;
+}
+header{
+  background:#111;
+  color:#fff;
+  padding:30px 0;
+}
+img{
+  max-width:300px;
+  margin:20px auto;
+}
+form{
+  margin:20px;
+}
+input[type=date]{
+  padding:.5em;
+  font-size:1em;
+}
+button{
+  padding:.5em 1em;
+  font-size:1em;
+  margin-left:.5em;
+}
+#result{
+  display:none;
+  margin:20px auto;
+  padding:20px;
+  max-width:600px;
+  background:#eef;
+}
+#result .mantra{
+  margin-top:10px;
+  font-style:italic;
+  color:#444;
+}
