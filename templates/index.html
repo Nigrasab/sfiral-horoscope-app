@@ -1,54 +1,32 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Сфираль‑Гороскоп</title>
-<style>
-  body{font-family:sans-serif;text-align:center;background:#f5f5f5;margin:0}
-  header{background:#111;color:#fff;padding:30px 0}
-  img{width:200px;margin:20px auto}
-  form{margin:20px}
-  input[type=date]{padding:.5em;font-size:1em}
-  button{padding:.5em 1em;font-size:1em;margin-left:.5em}
-  #result{display:none;margin:20px auto;padding:20px;max-width:600px;background:#eef}
-  #result .mantra{margin-top:10px;font-style:italic;color:#444}
-</style>
+  <meta charset="UTF-8">
+  <title>Сфираль‑Гороскоп</title>
+
+  <!-- Подключаем внешний CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
 </head>
 <body>
-<header>
-  <h1>Сфираль‑Гороскоп</h1>
-  <p>Фазовая характеристика жизненного пути по модели Сфирали</p>
-</header>
+  <header>
+    <h1>Сфираль‑Гороскоп</h1>
+    <p>Фазовая характеристика жизненного пути по модели Сфирали</p>
+  </header>
 
-<img src="{{ url_for('static', filename='sfiral.png') }}" alt="Сфираль">
+  <!-- изображение -->
+  <img src="{{ url_for('static', filename='sfiral.png') }}" alt="Сфираль">
 
-<form id="form">
-  <label>Введите дату рождения:</label>
-  <input type="date" id="birth" required>
-  <button type="submit">Старт</button>
-</form>
+  <!-- форма -->
+  <form id="form">
+    <label for="birth">Введите дату рождения:</label>
+    <input type="date" id="birth" required>
+    <button type="submit">Старт</button>
+  </form>
 
-<div id="result"></div>
+  <!-- блок для вывода результата -->
+  <div id="result"></div>
 
-<script>
-document.getElementById('form').addEventListener('submit', async e=>{
-  e.preventDefault();
-  const dateVal=document.getElementById('birth').value;
-  const rsp=await fetch('/api/phase',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({date:dateVal})
-  });
-  const data=await rsp.json();
-  const box=document.getElementById('result');
-  if(data.success){
-      box.innerHTML=`<h3>${data.title}</h3><p>${data.text}</p>
-                     <div class="mantra">${data.mantra}</div>`;
-  }else{
-      box.innerHTML=`<span style="color:red">${data.error}</span>`;
-  }
-  box.style.display='block';
-});
-</script>
+  <!-- Подключаем внешний JavaScript -->
+  <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
 </html>
